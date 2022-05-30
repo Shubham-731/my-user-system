@@ -1,0 +1,19 @@
+{
+  "name": "my-user-system",
+  "version": "1.0.0",
+  "main": "app.js",
+  "author": "Shubham P",
+  "scripts": {
+    "dev": "nodemon app.js",
+    "start": "node app.js"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "cookie-parser": "^1.4.6",
+    "ejs": "^3.1.8",
+    "express": "^4.18.1",
+    "joi": "^17.6.0",
+    "jwt": "^0.2.0",
+    "mongoose": "^6.3.4"
+  }
+}
