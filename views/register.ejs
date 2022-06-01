@@ -4,13 +4,13 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Login | My User System</title>
+    <title>Register | My User System</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="css/style.css" />
     <script src="js/user.js"></script>
   </head>
   <body>
-    <!-- <h1 class="text-center text-blue-500 mt-1 mb-3 text-3xl">Login here</h1> -->
     <section class="h-screen">
       <div class="px-6 h-full text-gray-800">
         <div
@@ -102,16 +102,11 @@
               <div class="mb-3">
                 <input
                   type="text"
-                  class="form-control block w-full px-4 py-2 text-xl font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
+                  class="form-control block w-full px-4 py-2 text-xl font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none peer"
                   placeholder="First Name"
                   id="firstName"
                 />
-                <p
-                  class="mt-2 invisible peer-invalid:visible text-pink-600 text-sm"
-                  id="fNameErr"
-                >
-                  Please provide a valid email address.
-                </p>
+                <p class="mt-1 text-pink-600 text-sm" id="fNameErr"></p>
               </div>
               <div class="mb-3">
                 <input
@@ -120,12 +115,7 @@
                   id="lastName"
                   placeholder="Last Name"
                 />
-                <p
-                  class="mt-2 invisible peer-invalid:visible text-pink-600 text-sm"
-                  id="lNameErr"
-                >
-                  Please provide a valid email address.
-                </p>
+                <p class="mt-1 text-pink-600 text-sm" id="lNameErr"></p>
               </div>
 
               <!-- Email input -->
@@ -136,28 +126,18 @@
                   id="email"
                   placeholder="Email address"
                 />
-                <p
-                  class="mt-2 invisible peer-invalid:visible text-pink-600 text-sm"
-                  id="emailErr"
-                >
-                  Please provide a valid email address.
-                </p>
+                <p class="mt-1 text-pink-600 text-sm" id="emailErr"></p>
               </div>
 
               <!-- Password input -->
               <div class="mb-3">
                 <input
                   type="password"
-                  class="form-control block w-full px-4 py-2 text-xl font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
+                  class="form-control block w-full px-4 py-2 text-xl font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none peer"
                   placeholder="Password"
                   id="password"
                 />
-                <p
-                  class="mt-2 invisible peer-invalid:visible text-pink-600 text-sm"
-                  id="passwordErr"
-                >
-                  Please provide a valid email address.
-                </p>
+                <p class="mt-1 text-pink-600 text-sm" id="passErr"></p>
               </div>
 
               <div class="mb-3">
@@ -167,6 +147,7 @@
                   id="confirmPassword"
                   placeholder="Confirm Password"
                 />
+                <p class="mt-1 text-pink-600 text-sm" id="confPassErr"></p>
               </div>
 
               <div class="flex justify-between items-center mb-3">
@@ -208,6 +189,27 @@
   </body>
 
   <script>
+    // Handle Errors
+    const fNameErr = document.getElementById("fNameErr");
+    const lNameErr = document.getElementById("lNameErr");
+    const emailErr = document.getElementById("emailErr");
+    const passErr = document.getElementById("passErr");
+    const confPassErr = document.getElementById("confPassErr");
+
+    const errorElements = [fNameErr, lNameErr, emailErr, passErr, confPassErr];
+
+    function displayErr() {
+      errorElements.forEach((errorElement) => {
+        if (errorElement.textContent == "") {
+          errorElement.classList.add("hidden");
+        } else {
+          errorElement.classList.remove("hidden");
+        }
+      });
+    }
+
+    displayErr();
+
     // Register User
     const registerForm = document.getElementById("registerForm");
     registerForm.addEventListener("submit", registerUser);
@@ -224,7 +226,7 @@
         ? true
         : false;
 
-      const data = await fetch("/users/register", {
+      const res = await fetch("/users/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -237,9 +239,28 @@
           confPassword,
           rememberMe,
         }),
-      }).then((res) => res.json());
+      });
 
+      const data = await res.json();
       console.log(data);
+
+      if (res.status === 400) {
+        fNameErr.textContent = data.fNameErr;
+        lNameErr.textContent = data.lNameErr;
+        emailErr.textContent = data.emailErr;
+        passErr.textContent = data.passErr;
+        confPassErr.textContent = data.confPassErr;
+      }
+
+      if (res.status === 409) {
+        alert(data.msg);
+      }
+
+      if (res.status === 201) {
+        location.assign("/dashboard");
+      }
+
+      displayErr();
     }
   </script>
 </html>

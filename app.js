@@ -1,5 +1,6 @@
 const express = require("express");
 const mongoose = require("mongoose");
+const cookieParser = require("cookie-parser");
 const homeRoutes = require("./routes/index");
 const userRoutes = require("./routes/user");
 
@@ -7,6 +8,8 @@ const app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+app.use(cookieParser());
 
 app.use("/users", express.static("public"));
 
