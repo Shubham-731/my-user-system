@@ -25,7 +25,7 @@
             />
           </div>
           <div class="xl:ml-20 xl:w-5/12 lg:w-5/12 md:w-8/12 mb-12 md:mb-0">
-            <form>
+            <form id="loginForm">
               <div
                 class="flex flex-row items-center justify-center lg:justify-start"
               >
@@ -102,9 +102,10 @@
                 <input
                   type="text"
                   class="form-control block w-full px-4 py-2 text-xl font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
-                  id="exampleFormControlInput2"
+                  id="email"
                   placeholder="Email address"
                 />
+                <p class="mt-1 text-pink-600 text-sm" id="emailErr"></p>
               </div>
 
               <!-- Password input -->
@@ -112,9 +113,10 @@
                 <input
                   type="password"
                   class="form-control block w-full px-4 py-2 text-xl font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
-                  id="exampleFormControlInput2"
+                  id="password"
                   placeholder="Password"
                 />
+                <p class="mt-1 text-pink-600 text-sm" id="passErr"></p>
               </div>
 
               <div class="flex justify-between items-center mb-6">
@@ -122,11 +124,11 @@
                   <input
                     type="checkbox"
                     class="form-check-input appearance-none h-4 w-4 border border-gray-300 rounded-sm bg-white checked:bg-blue-600 checked:border-blue-600 focus:outline-none transition duration-200 mt-1 align-top bg-no-repeat bg-center bg-contain float-left mr-2 cursor-pointer"
-                    id="exampleCheck2"
+                    id="rememberMe"
                   />
                   <label
                     class="form-check-label inline-block text-gray-800"
-                    for="exampleCheck2"
+                    for="rememberMe"
                     >Remember me</label
                   >
                 </div>
@@ -135,7 +137,7 @@
 
               <div class="text-center lg:text-left">
                 <button
-                  type="button"
+                  type="submit"
                   class="inline-block px-7 py-3 bg-blue-600 text-white font-medium text-sm leading-snug uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out"
                 >
                   Login
@@ -154,5 +156,65 @@
         </div>
       </div>
     </section>
+
+    <script>
+      // Handle Errors
+      const emailErr = document.getElementById("emailErr");
+      const passErr = document.getElementById("passErr");
+
+      const errorElements = [emailErr, passErr];
+
+      function displayErr() {
+        errorElements.forEach((errorElement) => {
+          if (errorElement.textContent == "") {
+            errorElement.classList.add("hidden");
+          } else {
+            errorElement.classList.remove("hidden");
+          }
+        });
+      }
+
+      displayErr();
+
+      // Login user
+      const loginForm = document.getElementById("loginForm");
+      loginForm.addEventListener("submit", loginUser);
+
+      async function loginUser(e) {
+        e.preventDefault();
+
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
+        const rememberMe = document.querySelector("#rememberMe:checked")
+          ? true
+          : false;
+
+        const res = await fetch("/users/login", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email, password, rememberMe }),
+        });
+
+        const data = await res.json();
+        console.log(data);
+
+        if (res.status === 400 || res.status === 403) {
+          emailErr.textContent = data.emailErr;
+          passErr.textContent = data.passErr;
+        }
+
+        if (res.status === 404) {
+          alert(data.msg);
+        }
+
+        if (res.status === 200) {
+          location.assign("/dashboard");
+        }
+
+        displayErr();
+      }
+    </script>
   </body>
 </html>

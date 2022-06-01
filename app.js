@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const cookieParser = require("cookie-parser");
 const homeRoutes = require("./routes/index");
 const userRoutes = require("./routes/user");
+const { checkUser } = require("./middlewares/authMiddleware");
 
 const app = express();
 
@@ -15,8 +16,12 @@ app.use("/users", express.static("public"));
 
 app.set("view engine", "ejs");
 
-mongoose.connect("mongodb://localhost:27017/test");
+mongoose.connect("mongodb://localhost:27017/test", {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
 
+app.use("*", checkUser);
 app.use("/", homeRoutes);
 app.use("/users", userRoutes);
 

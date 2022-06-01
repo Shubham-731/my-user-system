@@ -9,8 +9,19 @@
     <script src="https://cdn.tailwindcss.com"></script>
   </head>
   <body>
+    <% if (user !== null) { %>
     <h1 class="text-center text-blue-500 my-3 text-5xl">
-      Welcome &lt;name&gt;
+      Welcome <%= user.firstName %>
     </h1>
+    <% } %>
+
+    <form action="/users/logout" method="post">
+      <button
+        class="mx-auto bg-rose-400 hover:bg-rose-500 hover:bg-rose-600 active:bg-rose-700 focus:outline-none focus:ring focus:ring-violet-300 px-3 py-2 rounded-full"
+        type="submit"
+      >
+        Logout
+      </button>
+    </form>
   </body>
 </html>
